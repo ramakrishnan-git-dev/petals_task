@@ -1,0 +1,27 @@
+name: Create and Auto-Merge PR
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_URL=$(gh pr create \
+            --base main \
+            --head "${{ github.ref_name }}" \
+            --title "Merge ${{ github.ref_name }} into main" \
+            --body "Automatically created PR.")
+
+          gh pr merge "$PR_URL" --auto --squash
